@@ -8,7 +8,12 @@ export default function BookingPage({
 }: {
   params: { username: string; eventSlug: string };
 }) {
-  const [selectedDate, setSelectedDate] = useState<Date>(startOfToday());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    // Only initialize the date on the client side to avoid hydration mismatches
+    setSelectedDate(startOfToday());
+  }, []);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -20,6 +25,8 @@ export default function BookingPage({
   const [fetchingSlots, setFetchingSlots] = useState(false);
 
   useEffect(() => {
+    if (!selectedDate) return;
+
     async function fetchSlots() {
       setFetchingSlots(true);
       try {
@@ -109,25 +116,29 @@ export default function BookingPage({
 
           <div className="mb-6">
              <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
-             <div className="grid grid-cols-5 gap-2">
-                {[...Array(10)].map((_, i) => {
-                  const date = addDays(startOfToday(), i);
-                  const isSelected = format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setSelectedDate(date)}
-                      className={`p-2 rounded-md border text-center flex flex-col items-center justify-center
-                        ${isSelected ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-200 hover:border-indigo-500'}
-                      `}
-                    >
-                      <span className="text-xs uppercase">{format(date, 'E')}</span>
-                      <span className="text-lg font-semibold">{format(date, 'd')}</span>
-                    </button>
-                  )
-                })}
-             </div>
+             {selectedDate ? (
+               <div className="grid grid-cols-5 gap-2">
+                  {[...Array(10)].map((_, i) => {
+                    const date = addDays(startOfToday(), i);
+                    const isSelected = format(date, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setSelectedDate(date)}
+                        className={`p-2 rounded-md border text-center flex flex-col items-center justify-center
+                          ${isSelected ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-200 hover:border-indigo-500'}
+                        `}
+                      >
+                        <span className="text-xs uppercase">{format(date, 'E')}</span>
+                        <span className="text-lg font-semibold">{format(date, 'd')}</span>
+                      </button>
+                    )
+                  })}
+               </div>
+             ) : (
+               <div className="text-sm text-gray-500">Loading dates...</div>
+             )}
           </div>
 
           <div>
