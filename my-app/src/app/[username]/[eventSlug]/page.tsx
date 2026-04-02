@@ -25,9 +25,8 @@ export default function BookingPage({
   const [fetchingSlots, setFetchingSlots] = useState(false);
 
   useEffect(() => {
-    if (!selectedDate) return;
-
     async function fetchSlots() {
+      if (!selectedDate) return;
       setFetchingSlots(true);
       try {
         const dateStr = format(selectedDate, "yyyy-MM-dd");
