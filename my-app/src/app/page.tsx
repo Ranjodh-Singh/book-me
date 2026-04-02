@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import SignInButton from "@/components/SignInButton";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -24,12 +25,7 @@ export default async function Home() {
           </Link>
         ) : (
           <div className="space-y-4">
-            <Link
-              href="/api/auth/signin"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 w-full justify-center"
-            >
-              Sign In with Google
-            </Link>
+            <SignInButton />
           </div>
         )}
       </div>
